@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login — Shopping App</title>
+    <style>
+        :root{
+            --bg:#f5f7fb; --card:#fff; --accent:#2563eb; --muted:#6b7280;
+            --radius:12px; --shadow:0 6px 18px rgba(16,24,40,.08);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+        html,body{height:100%}
+        body{
+            margin:0; display:flex; align-items:center; justify-content:center;
+            background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 60%);
+            padding:24px;
+        }
+        .card{
+            width:100%; max-width:420px; background:var(--card); border-radius:var(--radius);
+            box-shadow:var(--shadow); padding:28px; box-sizing:border-box;
+        }
+        h1{margin:0 0 8px;font-size:20px}
+        p.lead{margin:0 0 20px;color:var(--muted);font-size:14px}
+        form{display:grid;gap:12px}
+        label{font-size:13px;color:#111827}
+        input[type="email"], input[type="password"]{
+            width:100%; padding:12px 12px; border:1px solid #e6e9ee; border-radius:8px;
+            font-size:14px; box-sizing:border-box; background:#fff;
+        }
+        .row{display:flex;align-items:center;justify-content:space-between}
+        .controls{display:flex;gap:10px;align-items:center}
+        .btn{
+            background:var(--accent); color:#fff; border:0; padding:10px 14px; border-radius:10px;
+            cursor:pointer; font-weight:600;
+        }
+        .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(37,99,235,.12)}
+        .muted{color:var(--muted);font-size:13px}
+        .foot{margin-top:14px;display:flex;justify-content:space-between;align-items:center}
+        .error{color:#b91c1c;font-size:13px;display:none}
+        .show-pass{font-size:13px;color:var(--muted);cursor:pointer;background:none;border:0}
+        @media (max-width:420px){ .card{padding:20px} }
+    </style>
+</head>
+<body>
+    <main class="card" role="main" aria-labelledby="login-title">
+        <header>
+            <h1 id="login-title">Sign in to Shopping App</h1>
+            <p class="lead">Enter your account credentials to continue.</p>
+        </header>
+
+        <form id="loginForm" action="/login" method="POST" novalidate>
+            <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" inputmode="email" autocomplete="email" required placeholder="you@example.com" />
+                <div id="emailError" class="error">Please enter a valid email.</div>
+            </div>
+
+            <div>
+                <label for="password">Password</label>
+                <div style="display:flex;gap:8px">
+                    <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="••••••••" />
+                    <button type="button" class="show-pass" id="togglePass" aria-pressed="false" title="Show password">Show</button>
+                </div>
+                <div id="passwordError" class="error">Password must be at least 6 characters.</div>
+            </div>
+
+            <div class="row">
+                <label style="display:flex;gap:8px;align-items:center;font-size:13px">
+                    <input type="checkbox" name="remember" id="remember" />
+                    <span class="muted">Remember me</span>
+                </label>
+                <a href="/forgot" class="muted" style="text-decoration:none">Forgot?</a>
+            </div>
+
+            <div>
+                <button type="submit" class="btn" id="submitBtn">Sign in</button>
+            </div>
+
+            <div class="foot muted">
+                <span>Don't have an account?</span>
+                <a href="/register" class="btn secondary" style="padding:8px 10px;border-radius:8px;text-decoration:none">Create</a>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        (function(){
+            const form = document.getElementById('loginForm');
+            const email = document.getElementById('email');
+            const pass = document.getElementById('password');
+            const emailErr = document.getElementById('emailError');
+            const passErr = document.getElementById('passwordError');
+            const toggle = document.getElementById('togglePass');
+
+            function validate(){
+                let ok = true;
+                if(!email.checkValidity()){
+                    emailErr.style.display = 'block'; ok = false;
+                } else emailErr.style.display = 'none';
+
+                if(pass.value.length < 6){
+                    passErr.style.display = 'block'; ok = false;
+                } else passErr.style.display = 'none';
+                return ok;
+            }
+
+            form.addEventListener('submit', function(e){
+                if(!validate()){
+                    e.preventDefault();
+                    return;
+                }
+                // Progress indicator / disable button to prevent double submits
+                const btn = document.getElementById('submitBtn');
+                btn.disabled = true;
+                btn.textContent = 'Signing in...';
+                // Allow normal submit to server; remove below if you want to post via fetch
+            });
+
+            toggle.addEventListener('click', function(){
+                const isShown = pass.type === 'text';
+                pass.type = isShown ? 'password' : 'text';
+                toggle.textContent = isShown ? 'Show' : 'Hide';
+                toggle.setAttribute('aria-pressed', String(!isShown));
+            });
+
+            email.addEventListener('input', () => emailErr.style.display = 'none');
+            pass.addEventListener('input', () => passErr.style.display = 'none');
+        })();
+    </script>
+</body>
+</html>
